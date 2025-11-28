@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package payment.currency.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/josestg/pb/go/payment/currency/v1;currencypb";
+option java_multiple_files = true;
+option java_package = "com.josestg.pb.payment.currency.v1";
+
+service ExchangeService {
+  rpc Exchange(ExchangeRequest) returns (ExchangeResponse) {
+    option (google.api.http) = {
+      post: "/payment-service/api/v1/currencies/exchange"
+      body: "*"
+    };
+  }
+}
+
+message Pair {
+  string base = 1 [
+    json_name = "base",
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.len = 3
+  ];
+  string quote = 2 [
+    json_name = "quote",
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.len = 3
+  ];
+}
+
+message ExchangeRequest {
+  repeated Pair pairs = 1 [
+    json_name = "pairs",
+    (buf.validate.field).required = true,
+    (buf.validate.field).repeated.min_items = 1
+  ];
+  google.protobuf.Timestamp requested_at = 2 [
+    json_name = "requested_at",
+    (buf.validate.field).required = true,
+    (buf.validate.field).timestamp.gt_now = true
+  ];
+}
+
+message Rate {
+  Pair pair = 1 [json_name = "pair"];
+  double rate = 2 [json_name = "rate"];
+  google.protobuf.Timestamp timestamp = 3 [json_name = "timestamp"];
+}
+
+message ExchangeResponse {
+  repeated Rate rates = 1 [json_name = "rates"];
+  google.protobuf.Timestamp responded_at = 2 [json_name = "responded_at"];
+}

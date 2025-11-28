@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package identity.session.v1;
+
+import "google/protobuf/timestamp.proto";
+import "identity/token/v1/token.proto";
+import "buf/validate/validate.proto";
+
+option go_package = "github.com/josestg/pb/go/identity/session/v1;sessionpb";
+option java_multiple_files = true;
+option java_package = "com.josestg.pb.session.v1";
+
+message CreateRequest {
+  string name = 1 [
+    json_name = "name",
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.min_len = 2,
+    (buf.validate.field).string.max_len = 120
+  ];
+  string email = 2 [
+    json_name = "email",
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true
+  ];
+  string password = 3 [
+    json_name = "password",
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.min_len = 8,
+    (buf.validate.field).string.max_len = 64
+  ];
+}
+
+message CreateResponse {
+  token.v1.Token access_token = 1 [json_name = "access_token"];
+  token.v1.Token refresh_token = 2 [json_name = "refresh_token"];
+}
+
+service CreateService {
+  rpc Create(CreateRequest) returns (CreateResponse) {}
+}
+
+message RevokeRequest {
+  token.v1.Token access_token = 1 [json_name = "access_token"];
+  token.v1.Token refresh_token = 2 [json_name = "refresh_token"];
+}
+
+message RevokeResponse {
+  string jti = 1 [
+    json_name = "jti",
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.tuuid = true
+  ];
+  google.protobuf.Timestamp revoked_at = 2 [
+    json_name = "revoked_at",
+    (buf.validate.field).required = true,
+    (buf.validate.field).timestamp.gt_now = true
+  ];
+}
+
+service RevokeService {
+  rpc Revoke(RevokeRequest) returns (RevokeResponse) {}
+}

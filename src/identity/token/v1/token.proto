@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package identity.token.v1;
+
+import "google/protobuf/timestamp.proto";
+import "buf/validate/validate.proto";
+
+option go_package = "github.com/josestg/pb/go/identity/token/v1;tokenpb";
+option java_package = "com.josestg.pb.identity.token.v1";
+option java_multiple_files = true;
+
+message Token {
+  string jti = 1 [
+    json_name="jti",
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.tuuid = true
+  ];
+  bytes value = 2 [
+    json_name = "value",
+    (buf.validate.field).required = true
+  ];
+  google.protobuf.Timestamp issued_at = 3 [
+    json_name = "issued_at",
+    (buf.validate.field).required = true
+  ];
+  google.protobuf.Timestamp expired_at = 4 [
+    json_name = "expired_at",
+    (buf.validate.field).required = true
+  ];
+}

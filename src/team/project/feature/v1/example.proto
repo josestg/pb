@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package team.project.feature.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "identity/session/v1/session.proto";
+import "shared/audit/v1/audit.proto";
+
+option go_package = "github.com/josestg/pb/go/team/project/feature/v1;featurepb";
+option java_multiple_files = true;
+option java_package = "com.josestg.pb.team.project.feature.v1";
+
+message ExampleRequest {
+  identity.session.v1.CreateRequest create = 1 [json_name = "create"];
+  shared.audit.v1.Audit audit = 2 [json_name = "audit"];
+}
+
+message ExampleResponse {
+  google.protobuf.Timestamp some_time = 3 [json_name = "some_time"];
+}
+
+service ExampleService {
+  rpc Example(ExampleRequest) returns (ExampleResponse) {
+    option (google.api.http) = {
+      post: "/team-project/api/v1/feature"
+      body: "*"
+    };
+  }
+}

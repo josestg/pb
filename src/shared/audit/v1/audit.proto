@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package shared.audit.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/josestg/pb/go/shared/audit/v1;auditpb";
+option java_package = "com.josestg.pb.shared.audit.v1";
+option java_multiple_files = true;
+
+message Audit {
+  google.protobuf.Timestamp created_at = 2 [json_name = "created_at"];
+  google.protobuf.Timestamp updated_at = 3 [json_name = "updated_at"];
+  optional google.protobuf.Timestamp deleted_at = 4 [json_name = "deleted_at"];
+}
